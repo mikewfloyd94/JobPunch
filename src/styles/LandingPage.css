@@ -8,7 +8,16 @@
 
 .landing-header {
   text-align: center;
-  padding: 60px 20px 40px;
+  padding: 40px 20px;
+  position: relative;
+}
+
+.header-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .landing-header h1 {
@@ -20,6 +29,26 @@
 .landing-header p {
   font-size: 1.3rem;
   opacity: 0.9;
+}
+
+.logout-button {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .landing-main {
@@ -78,4 +107,31 @@
 
 .portal-link:hover {
   opacity: 0.9;
+}
+
+.auth-footer-cards {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-footer-cards p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.auth-footer-cards a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.3s ease;
+}
+
+.auth-footer-cards a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
 }
