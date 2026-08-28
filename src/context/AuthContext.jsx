@@ -19,9 +19,14 @@ export function AuthProvider({ children }) {
         if (authUser) {
           setUser(authUser)
           await fetchUserRole(authUser.id)
+        } else {
+          setUser(null)
+          setUserRole(null)
         }
       } catch (err) {
         console.error('Auth initialization error:', err)
+        setUser(null)
+        setUserRole(null)
       } finally {
         setLoading(false)
       }
@@ -38,6 +43,7 @@ export function AuthProvider({ children }) {
           setUser(null)
           setUserRole(null)
         }
+        setLoading(false)
       }
     )
 
