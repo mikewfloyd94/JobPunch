@@ -7,20 +7,25 @@ Construction management application built with React and Vite, featuring separat
 ### Prerequisites
 - Node.js 16+ and npm/yarn
 - Git
+- Supabase account (free at [supabase.com](https://supabase.com))
 
 ### Installation
 
-```bash
-# Clone the repository
-git clone <repository-url>
-cd jobpunch
+1. **Clone and install**
+   ```bash
+   git clone <repository-url>
+   cd jobpunch
+   npm install
+   ```
 
-# Install dependencies
-npm install
+2. **Set up database** (5 minutes)
+   - Follow the step-by-step guide: [SUPABASE_SETUP_STEPS.md](./SUPABASE_SETUP_STEPS.md)
+   - This sets up authentication and data tables
 
-# Start development server
-npm run dev
-```
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
 The app will open at `http://localhost:5173`
 
@@ -51,9 +56,17 @@ The app will open at `http://localhost:5173`
 ### Technology Stack
 
 - **Frontend**: React 18.2, React Router 6.20
+- **Backend**: Supabase (PostgreSQL + Auth)
 - **Build Tool**: Vite 5.0
-- **HTTP Client**: Axios 1.6
+- **HTTP Client**: Axios 1.6, Supabase JS Client
 - **Dev Tools**: ESLint, Prettier
+
+## Documentation
+
+- **[SUPABASE_SETUP_STEPS.md](./SUPABASE_SETUP_STEPS.md)** - Step-by-step database setup guide
+- **[AUTH_SETUP.md](./AUTH_SETUP.md)** - Authentication implementation details
+- **[SUPABASE_INTEGRATION.md](./SUPABASE_INTEGRATION.md)** - API and data integration guide
+- **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Folder organization and components
 
 ## Directory Structure
 
@@ -68,15 +81,23 @@ See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for detailed folder organizat
 - Custom hooks in `src/hooks/`
 - Global state in `src/context/`
 
-## Future Roadmap
+## Features
 
-- [ ] Backend API integration
-- [ ] User authentication
+### Implemented ✅
+- [x] User authentication (email/password via Supabase)
+- [x] Role-based access (Manager/Contractor)
+- [x] Protected routes with PrivateRoute component
+- [x] Database integration with Supabase
+- [x] Two separate portals (Manager Dashboard / Contractor Portal)
+
+### Planned
 - [ ] Real-time notifications
 - [ ] Advanced search and filtering
 - [ ] Mobile app (React Native)
 - [ ] Unit and integration tests
 - [ ] CI/CD pipeline
+- [ ] Enhanced user profiles
+- [ ] File upload capabilities
 
 ## Contributing
 
