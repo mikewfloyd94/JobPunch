@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import ManagerDashboard from './pages/manager/Dashboard'
 import ContractorPortal from './pages/contractor/Portal'
@@ -36,9 +36,12 @@ function AppContent() {
       <DBStatusIndicator status={dbStatus} error={dbError} />
       <Router>
         <Routes>
+          {/* Public routes - accessible to everyone */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<LandingPage />} />
+
+          {/* Protected routes - require authentication */}
           <Route
             path="/manager/*"
             element={
@@ -55,6 +58,9 @@ function AppContent() {
               </PrivateRoute>
             }
           />
+
+          {/* Catch-all - redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </>

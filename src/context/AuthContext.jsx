@@ -17,9 +17,11 @@ export function AuthProvider({ children }) {
       try {
         console.log('[AuthContext] Initializing auth...')
         console.log('[AuthContext] Supabase configured:', isSupabaseConfigured)
+        console.log('[AuthContext] Supabase object:', { hasAuth: supabase?.auth !== undefined })
 
         if (!isSupabaseConfigured) {
-          console.error('[AuthContext] Supabase not properly configured - missing env variables')
+          console.error('[AuthContext] ❌ Supabase not properly configured - missing env variables')
+          console.error('[AuthContext] Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local')
           setUser(null)
           setUserRole(null)
           setLoading(false)
@@ -54,19 +56,24 @@ export function AuthProvider({ children }) {
 
     initializeAuth()
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, authUser) => {
-        console.log('[AuthContext] Auth state changed:', event, authUser ? `User: ${authUser.email}` : 'null')
-        if (authUser) {
-          setUser(authUser)
-          await fetchUserRole(authUser.id)
-        } else {
-          setUser(null)
-          setUserRole(null)
+    // Only set up listener if Supabase is properly configured
+    let authListener = null
+    if (isSupabaseConfigured) {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event, authUser) => {
+          console.log('[AuthContext] Auth state changed:', event, authUser ? `User: ${authUser.email}` : 'null')
+          if (authUser) {
+            setUser(authUser)
+            await fetchUserRole(authUser.id)
+          } else {
+            setUser(null)
+            setUserRole(null)
+          }
+          setLoading(false)
         }
-        setLoading(false)
-      }
-    )
+      )
+      authListener = data
+    }
 
     return () => {
       authListener?.unsubscribe()
