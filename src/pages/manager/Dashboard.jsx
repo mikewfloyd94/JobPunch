@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [showPunchModal, setShowPunchModal] = useState(false)
   const [showMessageModal, setShowMessageModal] = useState(false)
   const [selectedJobId, setSelectedJobId] = useState(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -31,36 +32,50 @@ export default function Dashboard() {
     document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light')
   }
 
+  const closeMenu = () => setMenuOpen(false)
+
   return (
-    <div className="manager-layout" data-theme={theme}>
-      <nav className="manager-sidebar">
-        <div className="sidebar-header">
-          <h2>JobPunch</h2>
-          <p className="sidebar-subtitle">Manager Portal</p>
+    <div className="manager-app" data-theme={theme}>
+      {/* Top Bar */}
+      <header className="app-topbar">
+        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} title="Menu">
+          ☰
+        </button>
+        <h1 className="app-title">JobPunch</h1>
+        <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle theme">
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+      </header>
+
+      {/* Hamburger Menu */}
+      <nav className={`app-menu ${menuOpen ? 'open' : ''}`}>
+        <div className="menu-header">
+          <h2>Menu</h2>
+          <button className="menu-close" onClick={closeMenu}>✕</button>
         </div>
-        <ul className="sidebar-menu">
-          <li><Link to="/manager">Overview</Link></li>
-          <li><Link to="/manager/projects">Projects</Link></li>
-          <li><Link to="/manager/teams">Teams</Link></li>
-          <li><Link to="/manager/reports">Reports</Link></li>
-          <li><Link to="/manager/settings">Settings</Link></li>
+        <ul className="menu-list">
+          <li><Link to="/manager" onClick={closeMenu}>Overview</Link></li>
+          <li><Link to="/manager/projects" onClick={closeMenu}>Projects</Link></li>
+          <li><Link to="/manager/teams" onClick={closeMenu}>Teams</Link></li>
+          <li><Link to="/manager/reports" onClick={closeMenu}>Reports</Link></li>
+          <li><Link to="/manager/settings" onClick={closeMenu}>Settings</Link></li>
+          <li className="menu-divider"></li>
+          <li><button className="menu-logout" onClick={() => { handleLogout(); closeMenu() }}>Sign Out</button></li>
         </ul>
       </nav>
 
-      <main className="manager-content">
-        <TopNav
-          userName={user?.email}
-          onThemeToggle={toggleTheme}
-          currentTheme={theme}
-          onLogout={handleLogout}
-        />
+      {/* Overlay when menu is open */}
+      {menuOpen && <div className="menu-overlay" onClick={closeMenu}></div>}
 
+      {/* Main Content */}
+      <main className="app-content">
         <Routes>
           <Route index element={
             <ManagerOverview
               onAddPunch={() => setShowPunchModal(true)}
               onAddMessage={() => setShowMessageModal(true)}
               onJobSelect={setSelectedJobId}
+              userName={user?.email}
             />
           } />
           <Route path="projects" element={<Projects />} />
@@ -86,26 +101,8 @@ export default function Dashboard() {
   )
 }
 
-function TopNav({ userName, onThemeToggle, currentTheme, onLogout }) {
-  return (
-    <div className="top-nav">
-      <div className="nav-left">
-        <h2>Welcome back</h2>
-        <p className="user-name">{userName?.split('@')[0] || 'Manager'}</p>
-      </div>
-      <div className="nav-right">
-        <button className="nav-icon-btn" onClick={onThemeToggle} title="Toggle theme">
-          {currentTheme === 'light' ? '🌙' : '☀️'}
-        </button>
-        <button className="nav-icon-btn logout-icon" onClick={onLogout} title="Sign Out">
-          🚪
-        </button>
-      </div>
-    </div>
-  )
-}
 
-function ManagerOverview({ onAddPunch, onAddMessage, onJobSelect }) {
+function ManagerOverview({ onAddPunch, onAddMessage, onJobSelect, userName }) {
   const { data: projects, loading: projectsLoading } = useSupabaseQuery(
     () => fetchProjects(),
     []
@@ -134,30 +131,33 @@ function ManagerOverview({ onAddPunch, onAddMessage, onJobSelect }) {
   const activeJobs = projects?.filter(p => p.status !== 'completed') || []
 
   return (
-    <div className="overview-mobile">
-      {/* Quick Action Buttons */}
-      <div className="quick-actions">
-        <button className="action-btn action-punch" onClick={onAddPunch}>
-          <span className="action-icon">✓</span>
-          <span className="action-label">Punch Item</span>
+    <div className="overview-content">
+      {/* Welcome Section */}
+      <div className="welcome-section">
+        <h2>Welcome back, {userName?.split('@')[0] || 'Manager'}</h2>
+        <p>Your active jobs and tasks</p>
+      </div>
+
+      {/* Full-Width Action Buttons (Stacked) */}
+      <div className="action-buttons">
+        <button className="action-btn-full action-punch-full" onClick={onAddPunch}>
+          <span className="btn-icon">✓</span>
+          <span className="btn-text">Add Punch Item</span>
         </button>
-        <button className="action-btn action-message" onClick={onAddMessage}>
-          <span className="action-icon">💬</span>
-          <span className="action-label">Message</span>
+        <button className="action-btn-full action-message-full" onClick={onAddMessage}>
+          <span className="btn-icon">💬</span>
+          <span className="btn-text">New Message</span>
         </button>
-        <button className="action-btn action-change">
-          <span className="action-icon">📋</span>
-          <span className="action-label">Change Order</span>
+        <button className="action-btn-full action-change-full">
+          <span className="btn-icon">📋</span>
+          <span className="btn-text">Create Change Order</span>
         </button>
       </div>
 
       {/* Today Section */}
       {getTodaysPunchItems().length > 0 && (
-        <section className="today-section">
-          <h2 className="section-header">
-            <span className="section-icon">📅</span>
-            Today's Tasks
-          </h2>
+        <section className="section-block">
+          <h2 className="section-title">📅 Today's Tasks</h2>
           <div className="today-items">
             {getTodaysPunchItems().map((item) => {
               const project = projects?.find(p => p.id === item.project_id)
@@ -181,11 +181,8 @@ function ManagerOverview({ onAddPunch, onAddMessage, onJobSelect }) {
       )}
 
       {/* Active Jobs Section - Large Cards */}
-      <section className="jobs-section">
-        <h2 className="section-header">
-          <span className="section-icon">🏢</span>
-          Active Jobs
-        </h2>
+      <section className="section-block">
+        <h2 className="section-title">🏢 Active Jobs</h2>
         {projectsLoading ? (
           <div className="loading-state">Loading jobs...</div>
         ) : activeJobs.length > 0 ? (
@@ -243,11 +240,8 @@ function ManagerOverview({ onAddPunch, onAddMessage, onJobSelect }) {
 
       {/* Open Punch Items - Quick View */}
       {getOpenPunchItems().length > 0 && (
-        <section className="punch-section">
-          <h2 className="section-header">
-            <span className="section-icon">⚠️</span>
-            Open Punch Items
-          </h2>
+        <section className="section-block">
+          <h2 className="section-title">⚠️ Open Punch Items</h2>
           <div className="punch-quick-list">
             {getOpenPunchItems().map((item) => {
               const project = projects?.find(p => p.id === item.project_id)
