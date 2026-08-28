@@ -62,6 +62,7 @@ function AppContent() {
 }
 
 export default function App() {
+  console.log('[App] Mounting with AuthProvider')
   return (
     <AuthProvider>
       <AppContent />
